@@ -159,11 +159,7 @@ const Processor = (props) => {
                                     <div className="frame-container">
                                         <div className="tile-base transparent" />
                                         <div className="TileFrame">
-                                            <img className="frame" src="/images/frames/none.svg" />
-                                            <img className="frame hidden" src="/images/frames/white.svg" />
-                                            <img className="frame hidden" src="/images/frames/white.svg" />
-                                            <img className="frame hidden" src="/images/frames/black.svg" />
-                                            <img className="frame hidden" src="/images/frames/black.svg" />
+                                            <img className="frame" src={props.imgBg} />
                                         </div>
                                     </div>
                                 </div>

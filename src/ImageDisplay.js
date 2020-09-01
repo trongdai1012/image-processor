@@ -225,6 +225,7 @@ const ImageDisplay = () => {
                     changeImage={changeImage}
                     changeIdx={changeIdx}
                     listImage={listImage}
+                    imgBg={imgBg}
                 />
             }
         </>
