@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import "antd/dist/antd.css";
 import Processor from './Processor';
 
 const fakeData = [{
