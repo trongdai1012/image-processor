@@ -17,88 +17,102 @@ const Processor = (props) => {
         setOpacity(props.listImage[props.changeIdx].opacity);
     }, []);
 
-    const onMouseDown = (e) => {
+    const onMouseDown = async (e) => {
+        e = window.event || e;
+        e.preventDefault();
         setOnClick(true);
     }
 
-    const onMouseUp = (e) => {
+    const onMouseUp = async (e) => {
+        e = window.event || e;
+        e.preventDefault();
         setPrePosX(0);
         setPrePosY(0);
         setOnClick(false);
     }
 
-    const onMouseMove = async (posX, posY) => {
+    const onMouseMove = async (e) => {
+        e = window.event || e;
+        e.preventDefault();
         if (!isOnClick) return;
         if (!prePosX || !prePosY) {
-            setPrePosX(posX);
-            setPrePosY(posY);
-        }
-        if (prePosX < posX && prePosY == posY) {
-            if (centerY < 300) setCenterY(centerY + 1);
-            setPrePosX(posX);
-            setPrePosY(posY);
+            setPrevPosX(e.clientX);
+            setPrevPosY(e.clientY);
             return;
         }
-        if (prePosX < posX && prePosY < posY) {
-            if (centerX < 300) setCenterX(centerX + 1);
-            if (centerY < 300) setCenterY(centerY + 1);
-            setPrePosX(posX);
-            setPrePosY(posY);
+        if (prePosX < e.clientX && prePosY == e.clientY) {
+            if (centerY < 300) setCenterPosY(centerY + 2 * scale);
+            setPrevPosX(e.clientX);
+            setPrevPosY(e.clientY);
             return;
         }
-        if (prePosX < posX && prePosY >
-            posY) {
+        if (prePosX < e.clientX && prePosY < e.clientY) {
+            if (centerX < 300) setCenterPosX(centerX + 2 * scale);
+            if (centerY < 300) setCenterPosY(centerY + 2 * scale);
+            setPrevPosX(e.clientX);
+            setPrevPosY(e.clientY);
+            return;
+        }
+        if (prePosX < e.clientX && prePosY > e.clientY) {
             if (centerX >
-                -300) setCenterX(centerX - 1);
-            if (centerY < 300) setCenterY(centerY + 1);
-            setPrePosX(posX);
-            setPrePosY(posY);
+                -300) setCenterPosX(centerX - 2 * scale);
+            if (centerY < 300) setCenterPosY(centerY + 2 * scale);
+            setPrevPosX(e.clientX);
+            setPrevPosY(e.clientY);
+            return;
+        }
+        if (prePosX > e.clientX && prePosY == e.clientY) {
+            if (centerY > -300) setCenterPosY(centerY - 2 * scale);
+            setPrevPosX(e.clientX);
+            setPrevPosY(e.clientY);
+            return;
+        }
+        if (prePosX > e.clientX && prePosY < e.clientY) {
+            if (centerX < 300) setCenterPosX(centerX + 2 * scale);
+            if (centerY > -300) setCenterPosY(centerY - 2 * scale);
+            setPrevPosX(e.clientX);
+            setPrevPosY(e.clientY);
             return;
         }
         if (prePosX >
-            posX && prePosY == posY) {
-            if (centerY >
-                -300) setCenterY(centerY - 1);
-            setPrePosX(posX);
-            setPrePosY(posY);
+            e.clientX && prePosY > e.clientY) {
+            if (centerX > -300) setCenterPosX(centerX - 2 * scale);
+            if (centerY > -300) setCenterPosY(centerY - 2 * scale);
+            setPrevPosX(e.clientX);
+            setPrevPosY(e.clientY);
             return;
         }
-        if (prePosX >
-            posX && prePosY < posY) {
-            if (centerX < 300) setCenterX(centerX + 1);
-            if (centerY >
-                -300) setCenterY(centerY - 1);
-            setPrePosX(posX);
-            setPrePosY(posY);
+        if (prePosX == e.clientX && prePosY > e.clientY) {
+            if (centerX > -300) setCenterPosX(centerX - 2 * scale);
+            setPrevPosX(e.clientX);
             return;
         }
-        if (prePosX >
-            posX && prePosY >
-            posY) {
-            if (centerX >
-                -300) setCenterX(centerX - 1);
-            if (centerY >
-                -300) setCenterY(centerY - 1);
-            setPrePosX(posX);
-            setPrePosY(posY);
-            return;
-        }
-        if (prePosX == posX && prePosY >
-            posY) {
-            if (centerX >
-                -300) setCenterX(centerX - 1);
-            setPrePosX(posX);
-            return;
-        }
-        if (prePosX == posX && prePosY < posY) {
-            if (centerX < 300) setCenterX(centerX + 1);
-            setPrePosX(posX);
+        if (prePosX == e.clientX && prePosY < e.clientY) {
+            if (centerX < 300) setCenterPosX(centerX + 2 * scale);
+            setPrevPosX(e.clientX);
             return;
         }
     }
 
-    const onScroll = (e) => {
-        e.preventDefault();
+    const setPrevPosX = async (posX) => {
+        setPrePosX(posX);
+    }
+
+    const setPrevPosY = async (posY) => {
+        setPrePosY(posY);
+    }
+
+    const setCenterPosX = async (centerX) => {
+        setCenterX(centerX);
+    }
+
+    const setCenterPosY = async (centerY) => {
+        setCenterY(centerY);
+    }
+
+    const onScroll = async (e) => {
+        e = window.event || e;
+        // e.preventDefault();
         if (e.deltaY >
             0 && scale >
             1) {
@@ -109,6 +123,15 @@ const Processor = (props) => {
         }
     }
 
+    const onMouseOut = async (e) => {
+        e = window.event || e;
+        e.preventDefault();
+
+        setPrePosX(0);
+        setPrePosY(0);
+        setOnClick(false);
+    }
+
     return (
         <>
             <div role="presentation" className="MuiDialog-root mixtiles-dialog-root" style={{ position: 'fixed', zIndex: 1300, right: '0px', bottom: '0px', top: '0px', left: '0px' }}>
@@ -116,7 +139,7 @@ const Processor = (props) => {
                 <div tabIndex={0} data-test="sentinelStart" />
                 <div className="MuiDialog-container MuiDialog-scrollPaper" role="none presentation" tabIndex={-1} style={{ opacity: 1, transform: 'none', transition: 'opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, transform 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms' }}>
                     <div className="MuiPaper-root MuiDialog-paper mixtiles-dialog-paper MuiDialog-paperScrollPaper MuiDialog-paperWidthSm MuiPaper-elevation24 MuiPaper-rounded" role="dialog">
-                        <div className="tile-cropper">
+                        <div className="tile-cropper" onMouseOutCapture={e => onMouseOut(e)}>
                             <div className="top-bar-container no-bottom-margin">
                                 <div className="top-bar ">
                                     <div className="left-comp" onClick={props.onClickHiddenAdjust}>
@@ -125,39 +148,38 @@ const Processor = (props) => {
                                         </div>
                                     </div>
                                     <div className="title ">Tùy chỉnh</div>
-                                    <div className="right-comp" onClick={e => props.changeImage(props.changeIdx, { scale, centerX, centerY, opacity, url: props.listImage[props.changeIdx].url })}>
+                                    <div className="right-comp" onClick={e => props.changeImage(props.changeIdx, { scale, centerX: centerX * 0.84, centerY: centerY * 0.84, opacity, url: props.listImage[props.changeIdx].url })}>
                                         <div className="DoneButton">Done</div>
                                     </div>
                                 </div>
                                 <div className="bottom-comp" />
                             </div>
-                            {
-                                <div className="cropper-content filter-original">
-                                    <div className="cropper-text">PINCH AND ZOOM</div>
-                                    <div data-testid="container"
-                                        style={{ textAlign: 'center', top: '100px', bottom: '100px' }}
-                                        className="cropper-container-style css-1dkwqii"
-                                        onMouseDown={e => onMouseDown(e)}
-                                        onMouseMove={e => onMouseMove(e.clientX, e.clientY)}
+                            <div className="cropper-content filter-original">
+                                <div className="cropper-text">PINCH AND ZOOM</div>
+                                <div data-testid="container"
+                                    style={{ textAlign: 'center', top: '102px', bottom: '100px' }}
+                                    className="cropper-container-style css-1dkwqii"
+                                    onMouseDown={async e => onMouseDown(e)}
+                                    onMouseMove={async e => onMouseMove(e)}
+                                    onMouseUp={async e => onMouseUp(e)}
+                                    onWheel={async e => onScroll(e)}
+                                >
+                                    <img
+                                        alt="" className="cropper-image-style css-ebdd77"
+                                        src={props.listImage[props.changeIdx] ? props.listImage[props.changeIdx].url : ''}
+                                        style={{ width: '283px', opacity: { opacity }, transform: `translate(${centerY}px, ${centerX}px) rotate(0deg) scale(${scale})` }}
                                         onMouseUp={e => onMouseUp(e)}
-                                        onWheel={e => onScroll(e)}>
-                                        <img
-                                            alt="" className="cropper-image-style css-ebdd77"
-                                            src={props.listImage[props.changeIdx] ? props.listImage[props.changeIdx].url : ''}
-                                            style={{ width: '283px', opacity: { opacity }, transform: `translate(${centerY}px, ${centerX}px) rotate(0deg) scale(${scale})` }}
-                                            onMouseUp={e => onMouseUp(e)}
-                                            ref={imgRef}
-                                        />
-                                        <div data-testid="cropper" className="cropper-area-style css-nikas5" style={{ width: '283px', height: '283px' }} />
-                                    </div>
-                                    <div className="frame-container">
-                                        <div className="tile-base transparent" />
-                                        <div className="TileFrame">
-                                            <img className="frame" src={props.imgBg} />
-                                        </div>
+                                        ref={imgRef}
+                                    />
+                                    <div data-testid="cropper" className="cropper-area-style css-nikas5" style={{ width: '283px', height: '283px' }} />
+                                </div>
+                                <div className="frame-container">
+                                    <div className="tile-base transparent" />
+                                    <div className="TileFrame">
+                                        <img className="frame" src={props.imgBg} />
                                     </div>
                                 </div>
-                            }
+                            </div>
                         </div>
                     </div>
                 </div>

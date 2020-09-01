@@ -113,7 +113,7 @@ const ImageDisplay = () => {
                     {listBgImg && listBgImg.map((item, idx) => {
                         return <div id={`tile-${idx}`} key={idx} className="tile" onClick={e => setBackground(e, idx)}>
                             <div className="tile-base" />
-                            <div className="preview frameless">
+                            <div className="preview frameless" style={{ width: '239px', height: '239px' }}>
                                 <img alt="" className="preview-image" style={{ opacity: 1, width: '100%' }} />
                             </div>
                             <div className="TileFrame">
@@ -130,7 +130,7 @@ const ImageDisplay = () => {
                             listImage && listImage.map((item, idx) => {
                                 return <div id={`tile-${idx}`} key={idx} className="tile">
                                     <div className="tile-base" />
-                                    <div className="preview frameless">
+                                    <div className="preview frameless" style={{ width: '235px', height: '235px' }}>
                                         <img alt="" className="preview-image" src={item.url} style={{ scale: item.scale, width: '100%', transform: `translate(${item.centerY}px, ${item.centerX}px) rotate(0deg) scale(${item.scale})` }} />
                                     </div>
                                     <div className="TileFrame" onClick={e =>
