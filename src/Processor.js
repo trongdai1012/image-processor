@@ -124,7 +124,7 @@ const Processor = (props) => {
                                             <img src="/images/icons/xIcon.svg" />
                                         </div>
                                     </div>
-                                    <div className="title ">Adjust</div>
+                                    <div className="title ">Tùy chỉnh</div>
                                     <div className="right-comp" onClick={e => props.changeImage(props.changeIdx, { scale, centerX, centerY, opacity, url: props.listImage[props.changeIdx].url })}>
                                         <div className="DoneButton">Done</div>
                                     </div>
@@ -133,25 +133,19 @@ const Processor = (props) => {
                             </div>
                             {
                                 <div className="cropper-content filter-original">
-                                    <div className="cropper-text">
-                                        PINCH AND ZOOM</div>
+                                    <div className="cropper-text">PINCH AND ZOOM</div>
                                     <div data-testid="container"
                                         style={{ textAlign: 'center', top: '100px', bottom: '100px' }}
                                         className="cropper-container-style css-1dkwqii"
-                                        onMouseDown={e =>
-                                            onMouseDown(e)}
-                                        onMouseMove={e =>
-                                            onMouseMove(e.clientX, e.clientY)}
-                                        onMouseUp={e =>
-                                            onMouseUp(e)}
-                                        onWheel={e =>
-                                            onScroll(e)}>
+                                        onMouseDown={e => onMouseDown(e)}
+                                        onMouseMove={e => onMouseMove(e.clientX, e.clientY)}
+                                        onMouseUp={e => onMouseUp(e)}
+                                        onWheel={e => onScroll(e)}>
                                         <img
                                             alt="" className="cropper-image-style css-ebdd77"
                                             src={props.listImage[props.changeIdx] ? props.listImage[props.changeIdx].url : ''}
                                             style={{ width: '283px', opacity: { opacity }, transform: `translate(${centerY}px, ${centerX}px) rotate(0deg) scale(${scale})` }}
-                                            onMouseUp={e =>
-                                                onMouseUp(e)}
+                                            onMouseUp={e => onMouseUp(e)}
                                             ref={imgRef}
                                         />
                                         <div data-testid="cropper" className="cropper-area-style css-nikas5" style={{ width: '283px', height: '283px' }} />
