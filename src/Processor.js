@@ -9,6 +9,8 @@ const Processor = (props) => {
     const [prePosX, setPrePosX] = useState(0);
     const [prePosY, setPrePosY] = useState(0);
     const imgRef = useRef();
+    const [offsetX, setOffsetX] = useState(-1);
+    const [offsetY, setOffsetY] = useState(-1);
 
     useEffect(() => {
         setCenterX(props.listImage[props.changeIdx].centerX);
@@ -20,99 +22,33 @@ const Processor = (props) => {
     const onMouseDown = async (e) => {
         e = window.event || e;
         e.preventDefault();
+        setOffsetX(e.clientX);
+        setOffsetY(e.clientY);
         setOnClick(true);
     }
 
     const onMouseUp = async (e) => {
         e = window.event || e;
         e.preventDefault();
-        setPrePosX(0);
-        setPrePosY(0);
         setOnClick(false);
     }
 
-    const onMouseMove = async (e) => {
+    const moveByRef = async (x, y) => {
+        imgRef.current.style.transform = `translate(${x}px, ${y}px) rotate(0deg) scale(${scale})`;
+        imgRef.current.style.cx = x;
+        imgRef.current.style.cy = y;
+    }
+
+    const moveMoveMove = async (e) => {
+        if (!isOnClick) return;
         e = window.event || e;
         e.preventDefault();
-        if (!isOnClick) return;
-        if (!prePosX || !prePosY) {
-            setPrevPosX(e.clientX);
-            setPrevPosY(e.clientY);
-            return;
+        if (offsetX !== -1 && offsetY !== -1) {
+            await moveByRef(e.clientX - offsetX + centerX, e.clientY - offsetY + centerY);
         }
-        if (prePosX < e.clientX && prePosY == e.clientY) {
-            if (centerY < 300) setCenterPosY(centerY + 2 * scale);
-            setPrevPosX(e.clientX);
-            setPrevPosY(e.clientY);
-            return;
-        }
-        if (prePosX < e.clientX && prePosY < e.clientY) {
-            if (centerX < 300) setCenterPosX(centerX + 2 * scale);
-            if (centerY < 300) setCenterPosY(centerY + 2 * scale);
-            setPrevPosX(e.clientX);
-            setPrevPosY(e.clientY);
-            return;
-        }
-        if (prePosX < e.clientX && prePosY > e.clientY) {
-            if (centerX >
-                -300) setCenterPosX(centerX - 2 * scale);
-            if (centerY < 300) setCenterPosY(centerY + 2 * scale);
-            setPrevPosX(e.clientX);
-            setPrevPosY(e.clientY);
-            return;
-        }
-        if (prePosX > e.clientX && prePosY == e.clientY) {
-            if (centerY > -300) setCenterPosY(centerY - 2 * scale);
-            setPrevPosX(e.clientX);
-            setPrevPosY(e.clientY);
-            return;
-        }
-        if (prePosX > e.clientX && prePosY < e.clientY) {
-            if (centerX < 300) setCenterPosX(centerX + 2 * scale);
-            if (centerY > -300) setCenterPosY(centerY - 2 * scale);
-            setPrevPosX(e.clientX);
-            setPrevPosY(e.clientY);
-            return;
-        }
-        if (prePosX >
-            e.clientX && prePosY > e.clientY) {
-            if (centerX > -300) setCenterPosX(centerX - 2 * scale);
-            if (centerY > -300) setCenterPosY(centerY - 2 * scale);
-            setPrevPosX(e.clientX);
-            setPrevPosY(e.clientY);
-            return;
-        }
-        if (prePosX == e.clientX && prePosY > e.clientY) {
-            if (centerX > -300) setCenterPosX(centerX - 2 * scale);
-            setPrevPosX(e.clientX);
-            return;
-        }
-        if (prePosX == e.clientX && prePosY < e.clientY) {
-            if (centerX < 300) setCenterPosX(centerX + 2 * scale);
-            setPrevPosX(e.clientX);
-            return;
-        }
-    }
-
-    const setPrevPosX = async (posX) => {
-        setPrePosX(posX);
-    }
-
-    const setPrevPosY = async (posY) => {
-        setPrePosY(posY);
-    }
-
-    const setCenterPosX = async (centerX) => {
-        setCenterX(centerX);
-    }
-
-    const setCenterPosY = async (centerY) => {
-        setCenterY(centerY);
     }
 
     const onScroll = async (e) => {
-        e = window.event || e;
-        // e.preventDefault();
         if (e.deltaY >
             0 && scale >
             1) {
@@ -123,13 +59,21 @@ const Processor = (props) => {
         }
     }
 
-    const onMouseOut = async (e) => {
-        e = window.event || e;
-        e.preventDefault();
-
-        setPrePosX(0);
-        setPrePosY(0);
+    const onMouseOut = (e) => {
         setOnClick(false);
+
+        setOffsetX(-1);
+        setOffsetY(-1);
+    }
+
+    const changeImg = async (e) => {
+        e.preventDefault();
+        await props.changeImage(props.changeIdx,
+            {
+                scale, centerX: (parseInt(imgRef.current.style.cy) || 0) * 0.84,
+                centerY: (parseInt(imgRef.current.style.cx) || 0) * 0.84,
+                opacity, url: props.listImage[props.changeIdx].url
+            })
     }
 
     return (
@@ -139,7 +83,7 @@ const Processor = (props) => {
                 <div tabIndex={0} data-test="sentinelStart" />
                 <div className="MuiDialog-container MuiDialog-scrollPaper" role="none presentation" tabIndex={-1} style={{ opacity: 1, transform: 'none', transition: 'opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, transform 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms' }}>
                     <div className="MuiPaper-root MuiDialog-paper mixtiles-dialog-paper MuiDialog-paperScrollPaper MuiDialog-paperWidthSm MuiPaper-elevation24 MuiPaper-rounded" role="dialog">
-                        <div className="tile-cropper" onMouseOutCapture={e => onMouseOut(e)}>
+                        <div className="tile-cropper">
                             <div className="top-bar-container no-bottom-margin">
                                 <div className="top-bar ">
                                     <div className="left-comp" onClick={props.onClickHiddenAdjust}>
@@ -147,8 +91,8 @@ const Processor = (props) => {
                                             <img src="/images/icons/xIcon.svg" />
                                         </div>
                                     </div>
-                                    <div className="title ">Tùy chỉnh</div>
-                                    <div className="right-comp" onClick={e => props.changeImage(props.changeIdx, { scale, centerX: centerX * 0.84, centerY: centerY * 0.84, opacity, url: props.listImage[props.changeIdx].url })}>
+                                    <div className="title">Tùy chỉnh</div>
+                                    <div className="right-comp" onClick={async e => await changeImg(e)}>
                                         <div className="DoneButton">Done</div>
                                     </div>
                                 </div>
@@ -159,16 +103,26 @@ const Processor = (props) => {
                                 <div data-testid="container"
                                     style={{ textAlign: 'center', top: '102px', bottom: '100px' }}
                                     className="cropper-container-style css-1dkwqii"
-                                    onMouseDown={async e => onMouseDown(e)}
-                                    onMouseMove={async e => onMouseMove(e)}
-                                    onMouseUp={async e => onMouseUp(e)}
-                                    onWheel={async e => onScroll(e)}
+                                    // onMouseDown={async e => await onMouseDown(e)}
+                                    // onMouseMove={async e => await moveMoveMove(e)}
+                                    // onMouseUp={async e => await onMouseUp(e)}
+                                    // onWheel={async e => await onScroll(e)}
+                                    onMouseOutCapture={async e => onMouseOut(e)}
+                                    onMouseDown={async e => await onMouseDown(e)}
+                                    onMouseMove={async e => await moveMoveMove(e)}
+                                    onMouseUp={async e => await onMouseUp(e)}
+                                    onWheel={async e => await onScroll(e)}
                                 >
                                     <img
                                         alt="" className="cropper-image-style css-ebdd77"
                                         src={props.listImage[props.changeIdx] ? props.listImage[props.changeIdx].url : ''}
                                         style={{ width: '283px', opacity: { opacity }, transform: `translate(${centerY}px, ${centerX}px) rotate(0deg) scale(${scale})` }}
-                                        onMouseUp={e => onMouseUp(e)}
+                                        // onMouseUp={async e => await onMouseUp(e)}
+                                        // onMouseOutCapture={async e => onMouseOut(e)}
+                                        // onMouseDown={async e => await onMouseDown(e)}
+                                        // onMouseMove={async e => await moveMoveMove(e)}
+                                        // onMouseUp={async e => await onMouseUp(e)}
+                                        // onWheel={async e => await onScroll(e)}
                                         ref={imgRef}
                                     />
                                     <div data-testid="cropper" className="cropper-area-style css-nikas5" style={{ width: '283px', height: '283px' }} />

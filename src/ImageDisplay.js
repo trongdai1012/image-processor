@@ -64,41 +64,41 @@ const ImageDisplay = () => {
     const [imgBg, setImgBg] = useState(fakeUrl[0].url);
     const [changeIdx, setChangeIdx] = useState();
 
-    const onClickShowModal = (e, idx) => {
+    const onClickShowModal = async (e, idx) => {
         e.preventDefault();
         setShowModal(true);
         setChangeIdx(idx);
     }
 
-    const onClickHiddenModal = (e) => {
+    const onClickHiddenModal = async (e) => {
         e.preventDefault();
         setShowModal(false);
     }
 
-    const onClickShowAdjust = (e) => {
+    const onClickShowAdjust = async (e) => {
         e.preventDefault();
         setShowAdjust(true);
         setShowModal(false);
     }
 
-    const onClickHiddenAdjust = (e) => {
+    const onClickHiddenAdjust = async (e) => {
         e.preventDefault();
         setShowAdjust(false);
     }
 
-    const setBackground = (e, idx) => {
+    const setBackground = async (e, idx) => {
         e.preventDefault();
         setImgBg(fakeUrl[idx].url);
     }
 
-    const changeImage = (idx, img) => {
+    const changeImage = async (idx, img) => {
         let listTemp = [...listImage];
         listTemp[idx] = img;
         setListImage(listTemp);
         setShowAdjust(false);
     }
 
-    const removeImg = (e) => {
+    const removeImg = async (e) => {
         e.preventDefault();
         let listTemp = [...listImage];
         listTemp = listTemp.filter(x => x.id != listTemp[changeIdx].id);
@@ -111,7 +111,7 @@ const ImageDisplay = () => {
             <div id="review-order-page" className="review-order-page filter-original" style={{ height: '300px' }}>
                 <div className="TilesStrip">
                     {listBgImg && listBgImg.map((item, idx) => {
-                        return <div id={`tile-${idx}`} key={idx} className="tile" onClick={e => setBackground(e, idx)}>
+                        return <div id={`tile-${idx}`} key={idx} className="tile" onClick={async e => await setBackground(e, idx)}>
                             <div className="tile-base" />
                             <div className="preview frameless" style={{ width: '239px', height: '239px' }}>
                                 <img alt="" className="preview-image" style={{ opacity: 1, width: '100%' }} />
@@ -133,8 +133,7 @@ const ImageDisplay = () => {
                                     <div className="preview frameless" style={{ width: '235px', height: '235px' }}>
                                         <img alt="" className="preview-image" src={item.url} style={{ scale: item.scale, width: '100%', transform: `translate(${item.centerY}px, ${item.centerX}px) rotate(0deg) scale(${item.scale})` }} />
                                     </div>
-                                    <div className="TileFrame" onClick={e =>
-                                        onClickShowModal(e, idx)}>
+                                    <div className="TileFrame" onClick={async e => await onClickShowModal(e, idx)}>
                                         <img className="frame" src={imgBg} />
                                     </div>
                                 </div>
@@ -176,9 +175,9 @@ const ImageDisplay = () => {
                                     <div tabIndex={0} data-test="sentinelStart" />
                                     <div className="MuiPaper-root MuiDrawer-paper adjust-tile-drawer MuiDrawer-paperAnchorBottom MuiPaper-elevation16" tabIndex={-1} style={{ transform: 'none', transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms' }}>
                                         <div className="adjust-tile-buttons">
-                                            <div className="dialog-button no-border" onClick={e => onClickShowAdjust(e)}>Tùy chỉnh</div>
-                                            <div className="dialog-button highlighted" onClick={e => removeImg(e)}>Xóa bỏ</div>
-                                            <div className="dialog-button gray" onClick={e => onClickHiddenModal(e)}>Bỏ qua</div>
+                                            <div className="dialog-button no-border" onClick={async e => await onClickShowAdjust(e)}>Tùy chỉnh</div>
+                                            <div className="dialog-button highlighted" onClick={async e => await removeImg(e)}>Xóa bỏ</div>
+                                            <div className="dialog-button gray" onClick={async e => await onClickHiddenModal(e)}>Bỏ qua</div>
                                         </div>
                                     </div>
                                     <div tabIndex={0} data-test="sentinelEnd" />
