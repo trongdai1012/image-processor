@@ -11,11 +11,11 @@ const Processor = (props) => {
     const imgRef = useRef();
 
     useEffect(() => {
-        // setCenterX(props.listImage[props.changeIdx].centerX);
-        // setCenterX(props.listImage[props.changeIdx].centerY);
-        // setCenterX(props.listImage[props.changeIdx].opacity);
-        // setCenterX(props.listImage[props.changeIdx].scale);
-    }, [])
+        setCenterX(props.listImage[props.changeIdx].centerX);
+        setCenterY(props.listImage[props.changeIdx].centerY);
+        setScale(props.listImage[props.changeIdx].scale);
+        setOpacity(props.listImage[props.changeIdx].opacity);
+    }, []);
 
     const onMouseDown = (e) => {
         setOnClick(true);
@@ -98,7 +98,6 @@ const Processor = (props) => {
     }
 
     const onScroll = (e) => {
-        console.log('e', e)
         e.preventDefault();
         if (e.deltaY >
             0 && scale >
@@ -111,9 +110,9 @@ const Processor = (props) => {
     }
 
     return (
-        <div className="App" hidden={props.showAdjust}>
+        <>
             <div role="presentation" className="MuiDialog-root mixtiles-dialog-root" style={{ position: 'fixed', zIndex: 1300, right: '0px', bottom: '0px', top: '0px', left: '0px' }}>
-                <div className="MuiBackdrop-root mixtiles-backdrop" aria-hidden="true" style={{ opacity: 1, transition: 'opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms' }} />
+                <div className="MuiBackdrop-root mixtiles-backdrop" hidden={props.showAdjust} aria-hidden="true" style={{ opacity: 1, transition: 'opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms' }} />
                 <div tabIndex={0} data-test="sentinelStart" />
                 <div className="MuiDialog-container MuiDialog-scrollPaper" role="none presentation" tabIndex={-1} style={{ opacity: 1, transform: 'none', transition: 'opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, transform 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms' }}>
                     <div className="MuiPaper-root MuiDialog-paper mixtiles-dialog-paper MuiDialog-paperScrollPaper MuiDialog-paperWidthSm MuiPaper-elevation24 MuiPaper-rounded" role="dialog">
@@ -125,9 +124,8 @@ const Processor = (props) => {
                                             <img src="/images/icons/xIcon.svg" />
                                         </div>
                                     </div>
-                                    <div className="title ">
-                                        Adjust</div>
-                                    <div className="right-comp" >
+                                    <div className="title ">Adjust</div>
+                                    <div className="right-comp" onClick={e => props.changeImage(props.changeIdx, { scale, centerX, centerY, opacity, url: props.listImage[props.changeIdx].url })}>
                                         <div className="DoneButton">Done</div>
                                     </div>
                                 </div>
@@ -138,7 +136,7 @@ const Processor = (props) => {
                                     <div className="cropper-text">
                                         PINCH AND ZOOM</div>
                                     <div data-testid="container"
-                                        style={{ textAlign: 'center' }}
+                                        style={{ textAlign: 'center', top: '100px', bottom: '100px' }}
                                         className="cropper-container-style css-1dkwqii"
                                         onMouseDown={e =>
                                             onMouseDown(e)}
@@ -148,7 +146,6 @@ const Processor = (props) => {
                                             onMouseUp(e)}
                                         onWheel={e =>
                                             onScroll(e)}>
-                                        {console.log('props.listImage[props.changeIdx]', props.listImage[props.changeIdx])}
                                         <img
                                             alt="" className="cropper-image-style css-ebdd77"
                                             src={props.listImage[props.changeIdx] ? props.listImage[props.changeIdx].url : ''}
@@ -157,9 +154,7 @@ const Processor = (props) => {
                                                 onMouseUp(e)}
                                             ref={imgRef}
                                         />
-                                        <div data-testid="cropper" className="cropper-area-style css-nikas5" style={{ width: '283px', height: '283px' }}
-                                            onScroll={e =>
-                                                onScroll(e)} />
+                                        <div data-testid="cropper" className="cropper-area-style css-nikas5" style={{ width: '283px', height: '283px' }} />
                                     </div>
                                     <div className="frame-container">
                                         <div className="tile-base transparent" />
@@ -178,7 +173,7 @@ const Processor = (props) => {
                 </div>
                 <div tabIndex={0} data-test="sentinelEnd" />
             </div>
-        </div>
+        </>
     );
 }
 
