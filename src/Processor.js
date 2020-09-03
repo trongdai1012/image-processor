@@ -6,8 +6,6 @@ const Processor = (props) => {
     const [centerY, setCenterY] = useState(0);
     const [scale, setScale] = useState(1);
     const [isOnClick, setOnClick] = useState(false);
-    const [prePosX, setPrePosX] = useState(0);
-    const [prePosY, setPrePosY] = useState(0);
     const imgRef = useRef();
     const [offsetX, setOffsetX] = useState(-1);
     const [offsetY, setOffsetY] = useState(-1);
@@ -31,6 +29,8 @@ const Processor = (props) => {
         e = window.event || e;
         e.preventDefault();
         setOnClick(false);
+        setCenterX(e.clientX - offsetX + centerX);
+        setCenterY(e.clientY - offsetY + centerY);
     }
 
     const moveByRef = async (x, y) => {
@@ -49,9 +49,7 @@ const Processor = (props) => {
     }
 
     const onScroll = async (e) => {
-        if (e.deltaY >
-            0 && scale >
-            1) {
+        if (e.deltaY > 0 && scale > 1) {
             setScale(scale - 0.5);
         }
         if (e.deltaY < 0 && scale < 5) {
@@ -99,14 +97,10 @@ const Processor = (props) => {
                                 <div className="bottom-comp" />
                             </div>
                             <div className="cropper-content filter-original">
-                                <div className="cropper-text">PINCH AND ZOOM</div>
+                                <div className="cropper-text">Dịch chuyển và thu phóng</div>
                                 <div data-testid="container"
                                     style={{ textAlign: 'center', top: '102px', bottom: '100px' }}
                                     className="cropper-container-style css-1dkwqii"
-                                    // onMouseDown={async e => await onMouseDown(e)}
-                                    // onMouseMove={async e => await moveMoveMove(e)}
-                                    // onMouseUp={async e => await onMouseUp(e)}
-                                    // onWheel={async e => await onScroll(e)}
                                     onMouseOutCapture={async e => onMouseOut(e)}
                                     onMouseDown={async e => await onMouseDown(e)}
                                     onMouseMove={async e => await moveMoveMove(e)}
@@ -116,13 +110,7 @@ const Processor = (props) => {
                                     <img
                                         alt="" className="cropper-image-style css-ebdd77"
                                         src={props.listImage[props.changeIdx] ? props.listImage[props.changeIdx].url : ''}
-                                        style={{ width: '283px', opacity: { opacity }, transform: `translate(${centerY}px, ${centerX}px) rotate(0deg) scale(${scale})` }}
-                                        // onMouseUp={async e => await onMouseUp(e)}
-                                        // onMouseOutCapture={async e => onMouseOut(e)}
-                                        // onMouseDown={async e => await onMouseDown(e)}
-                                        // onMouseMove={async e => await moveMoveMove(e)}
-                                        // onMouseUp={async e => await onMouseUp(e)}
-                                        // onWheel={async e => await onScroll(e)}
+                                        style={{ width: '283px', opacity: { opacity }, transform: `translate(${centerX}px, ${centerY}px) rotate(0deg) scale(${scale})` }}
                                         ref={imgRef}
                                     />
                                     <div data-testid="cropper" className="cropper-area-style css-nikas5" style={{ width: '283px', height: '283px' }} />
