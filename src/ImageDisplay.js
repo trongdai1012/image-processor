@@ -56,6 +56,9 @@ const fakeUrl = [
         url: '/images/frames/black.svg'
     }
 ]
+
+let draggedItem;
+
 const ImageDisplay = () => {
     const [showModal, setShowModal] = useState(false);
     const [showAdjust, setShowAdjust] = useState(false);
@@ -106,35 +109,63 @@ const ImageDisplay = () => {
         setShowModal(false);
     }
 
+    const onDragStart = (e, idx) => {
+        e = window.event || e;
+        draggedItem = listImage[idx];
+        e.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.setData("text/html", e.target.parentNode.parentNode);
+        e.dataTransfer.setDragImage(e.target.parentNode.parentNode, 20, 20);
+    }
+
+    const onDragOver = (idx) => {
+        const draggedOverItem = listImage[idx];
+
+        if (draggedOverItem === draggedItem) {
+            return;
+        }
+
+        let items = listImage.filter(it => it !== draggedItem);
+
+        items.splice(idx, 0, draggedItem);
+
+        setListImage(items);
+    }
+
+    const onDragEnd = e => {
+        draggedItem = null;
+    }
+
     return (
         <>
-            <div id="review-order-page" className="review-order-page filter-original" style={{ height: '300px' }}>
-                <div className="TilesStrip">
-                    {listBgImg && listBgImg.map((item, idx) => {
-                        return <div id={`tile-${idx}`} key={idx} className="tile" onClick={async e => await setBackground(e, idx)}>
-                            <div className="tile-base" />
-                            <div className="preview frameless" style={{ width: '239px', height: '239px' }}>
-                                <img alt="" className="preview-image" style={{ opacity: 1, width: '100%' }} />
-                            </div>
-                            <div className="TileFrame">
-                                <img className="frame" src={item.url} />
-                            </div>
+            <div className="TilesStrip">
+                {listBgImg && listBgImg.map((item, idx) => {
+                    return <div id={`tile-${idx}`} key={idx} className="tile" onClick={async e => await setBackground(e, idx)}>
+                        <div className="tile-base" />
+                        <div className="preview frameless" style={{ width: '239px', height: '239px' }}>
+                            <img alt="" className="preview-image" style={{ opacity: 1, width: '100%' }} />
                         </div>
-                    })}
-                </div>
+                        <div className="TileFrame">
+                            <img className="frame" src={item.url} />
+                        </div>
+                    </div>
+                })}
             </div>
             <div id="review-order-page" className="review-order-page filter-original">
                 <div className="content">
                     <div className="TilesStrip">
                         {
                             listImage && listImage.map((item, idx) => {
-                                return <div id={`tile-${idx}`} key={idx} className="tile">
-                                    <div className="tile-base" />
-                                    <div className="preview frameless" style={{ width: '235px', height: '235px' }}>
-                                        <img alt="" className="preview-image" src={item.url} style={{ scale: item.scale, width: '100%', transform: `translate(${item.centerY}px, ${item.centerX}px) rotate(0deg) scale(${item.scale})` }} />
+                                return <div id={`tile-${idx}`} key={idx} className="tile" draggable={true} onDragOver={e => onDragOver(idx)}>
+                                    <div className="tile-base" draggable={true} />
+                                    <div className="preview frameless" draggable={true} style={{ width: '235px', height: '235px' }}>
+                                        <img alt="" className="preview-image" draggable={true} src={item.url} style={{ scale: item.scale, width: '100%', transform: `translate(${item.centerY}px, ${item.centerX}px) rotate(0deg) scale(${item.scale})` }} />
                                     </div>
-                                    <div className="TileFrame" onClick={async e => await onClickShowModal(e, idx)}>
-                                        <img className="frame" src={imgBg} />
+                                    <div className="TileFrame" draggable={true} onClick={async e => await onClickShowModal(e, idx)}>
+                                        <img className="frame"
+                                            src={imgBg}
+                                            draggable={true}
+                                            onDragStart={e => onDragStart(e, idx)}
+                                            onDragEnd={e => onDragEnd(e)} />
                                     </div>
                                 </div>
                             })
